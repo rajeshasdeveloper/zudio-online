@@ -1,10 +1,14 @@
-import React, { useState, useEffect } from 'react';
-import Popup from 'reactjs-popup';
+import React, { useState } from 'react';
+// import Popup from 'reactjs-popup';
 
 function ToDo() {
     const [task, setTask] = useState('');
     const [newTask, setNewTask] = useState([]);
-    const [editTask, setEditTask] = useState([]);
+    const [editTaskValue, setEditTaskValue] = useState({
+        value: '',
+        idx: '',
+    });
+    const [enableInput, setEnableInput] = useState(false);
 
     // useEffect(() => {});
 
@@ -12,9 +16,9 @@ function ToDo() {
         setTask(event.target.value);
     };
 
-    const handleNewChange = (event) => {
-        setEditTask(event.target.value);
-    };
+    // const handleNewChange = (event) => {
+    //     setEditTaskValue(event.target.value);
+    // };
 
     const addTask = () => {
         if (task.trim() !== '') {
@@ -28,14 +32,53 @@ function ToDo() {
         setNewTask(deletedTask);
     };
 
-    const editedTask = (idx) => {
-        // const existingTasks = newTask;
-        // existingTasks[index] = editTask;
+    const updateEditedTaskValue = () => {
         setNewTask((ets) => {
-            ets[idx] = editTask;
+            ets[editTaskValue.idx] = editTaskValue.value;
             return ets;
         });
-        // setTask('');
+    };
+
+    const enableEditInput = (currentValue = '', idx) => {
+        setEditTaskValue({ value: currentValue, idx: idx });
+        setEnableInput(!enableInput);
+    };
+
+    const enableEditingValueFunction = () => {
+        return enableInput ? (
+            <div>
+                <p>Edit the todo:</p>
+                <input
+                    type='text'
+                    placeholder={editTaskValue.value}
+                    onChange={(e) =>
+                        setEditTaskValue((prev) => ({
+                            ...prev,
+                            ...{ value: e.target.value },
+                        }))
+                    }
+                ></input>
+                <br />
+                <button
+                    onClick={() => {
+                        setEnableInput(!enableInput);
+                    }}
+                >
+                    cancel
+                </button>
+                <br />
+                <button
+                    onClick={() => {
+                        updateEditedTaskValue();
+                        setEnableInput(!enableInput);
+                    }}
+                >
+                    ok
+                </button>
+            </div>
+        ) : (
+            <></>
+        );
     };
 
     return (
@@ -76,51 +119,18 @@ function ToDo() {
                                 >
                                     DELETE
                                 </button>
-                                <Popup
-                                    trigger={
-                                        <button className='border-2 border-white hover:border-gray-400 bg-white hover:bg-gray-400 text-black rounded-md px-4'>
-                                            EDIT
-                                        </button>
+                                <button
+                                    className='border-2 border-white hover:border-gray-400 bg-white hover:bg-gray-400 text-black rounded-md px-4'
+                                    onClick={() =>
+                                        enableEditInput(tasks, index)
                                     }
-                                    position='right center'
                                 >
-                                    {(close) => (
-                                        <div className='flex flex-col gap-4 border-2 border-gray bg-white p-4'>
-                                            <div className=''>
-                                                <p>Edit the todo:</p>
-                                                <input
-                                                    placeholder={tasks}
-                                                    type='text'
-                                                    onChange={handleNewChange}
-                                                    // value={editTask}
-                                                    className='border-2 border-orange-400 rounded-md '
-                                                ></input>
-                                            </div>
-                                            <div className='flex justify-end'>
-                                                <button
-                                                    onClick={() => close()}
-                                                    className='border-2 border-black w-[70px] bg-black text-white mx-2 px-2 rounded-md'
-                                                >
-                                                    cancel
-                                                </button>
-                                                <button
-                                                    onClick={(e) => {
-                                                        e.stopPropagation()
-                                                        e.preventDefault()
-                                                        editedTask(index);
-                                                        close();
-                                                    }}
-                                                    className='border-2 border-orange-400 w-[50px] bg-orange-400 text-black rounded-md'
-                                                >
-                                                    ok
-                                                </button>
-                                            </div>
-                                        </div>
-                                    )}
-                                </Popup>
+                                    EDIT
+                                </button>
                             </div>
                         </li>
                     ))}
+                    {enableEditingValueFunction()}
                 </ul>
             </div>
         </>
