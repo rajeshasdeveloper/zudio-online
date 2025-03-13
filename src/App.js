@@ -1,11 +1,10 @@
-import './App.css';
+import React from 'react';
+import ToDo from './components/ToDo';
 
-function App() {
-  return (
-    <div className="App">
-     abcd
-    </div>
-  );
-}
+const App = () => {
+    return <div>
+        <ToDo/>
+    </div>;
+};
 
 export default App;
